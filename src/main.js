@@ -34,10 +34,16 @@ let lastChainResults = [];
 let lastAsymmetryResults = [];
 let frameCount = 0;
 
-// Debounce: track previous dashboard content to avoid fluttering
+// Time-based throttling to prevent dashboard fluttering
 let lastAlertHash = '';
 let lastChainHash = '';
 let lastAsymmetryHash = '';
+let lastAlertUpdateTime = 0;
+let lastChainUpdateTime = 0;
+let lastAsymmetryUpdateTime = 0;
+const ALERT_UPDATE_INTERVAL_MS = 2000;      // Update alerts at most every 2s
+const CHAIN_UPDATE_INTERVAL_MS = 3000;      // Update kinetic chain at most every 3s
+const ASYMMETRY_UPDATE_INTERVAL_MS = 3000;  // Update asymmetry at most every 3s
 
 // ── Setup Screen Logic ──
 document.addEventListener('DOMContentLoaded', () => {
@@ -223,17 +229,19 @@ function mainLoop(video, canvas) {
         // 5. Update overlays
         updateOverlays(repCounter.repCount, analysis.overallScore);
 
-        // 6. Update alerts (throttled to every 15 frames + debounced)
-        if (frameCount % 15 === 0) {
+        // 6. Update alerts (time-based: every 2s + content debounced)
+        const now = Date.now();
+        if (now - lastAlertUpdateTime >= ALERT_UPDATE_INTERVAL_MS) {
             const alertHash = analysis.checks.map(c => c.id + c.severity).join(',');
             if (alertHash !== lastAlertHash) {
                 lastAlertHash = alertHash;
                 updateAlerts(analysis.checks);
             }
+            lastAlertUpdateTime = now;
         }
 
-        // 7. Kinetic chain analysis (throttled to every 30 frames + debounced)
-        if (frameCount % 30 === 0) {
+        // 7. Kinetic chain analysis (time-based: every 3s + content debounced)
+        if (now - lastChainUpdateTime >= CHAIN_UPDATE_INTERVAL_MS) {
             const chainResults = traceKineticChain(analysis.checks);
             const chainHash = chainResults.map(r => r.symptom).join(',');
             if (chainHash !== lastChainHash) {
@@ -241,6 +249,7 @@ function mainLoop(video, canvas) {
                 lastChainResults = chainResults;
                 updateKineticChain(chainResults);
             }
+            lastChainUpdateTime = now;
         }
 
         // 8. Update fatigue chart on rep completion
@@ -249,8 +258,8 @@ function mainLoop(video, canvas) {
             updateFatigueChart(repScores);
         }
 
-        // 9. Bilateral asymmetry (throttled to every 30 frames + debounced)
-        if (frameCount % 30 === 0) {
+        // 9. Bilateral asymmetry (time-based: every 3s + content debounced)
+        if (now - lastAsymmetryUpdateTime >= ASYMMETRY_UPDATE_INTERVAL_MS) {
             const asymmetryResults = detectAsymmetry(landmarks);
             const asymHash = asymmetryResults.map(a => a.name + Math.round(a.asymmetryPct)).join(',');
             if (asymHash !== lastAsymmetryHash) {
@@ -258,6 +267,7 @@ function mainLoop(video, canvas) {
                 lastAsymmetryResults = asymmetryResults;
                 updateAsymmetry(asymmetryResults);
             }
+            lastAsymmetryUpdateTime = now;
         }
 
         // 10. Voice coaching — generates cues AND pushes context to conversational AI
