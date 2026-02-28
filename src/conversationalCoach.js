@@ -16,8 +16,8 @@ import { Conversation } from '@elevenlabs/client';
 
 // ── Configuration ──────────────────────────────────────────────────────
 const DEFAULT_VOICE_ID = 'JBFqnCBsd6RMkjVDRZzb'; // "George" — clear, authoritative
-const PROACTIVE_INTERVAL_MS = 6000; // Coach speaks proactively every 6s max
-const CONTEXT_UPDATE_INTERVAL_MS = 2000; // Push form data context every 2s
+const PROACTIVE_INTERVAL_MS = 15000; // Coach speaks proactively every 15s max
+const CONTEXT_UPDATE_INTERVAL_MS = 8000; // Push form data context every 8s
 
 // ── State ──────────────────────────────────────────────────────────────
 let conversation = null;
@@ -379,12 +379,18 @@ function sendContextToAgent() {
 
     const now = Date.now();
     if (now - lastProactiveSpeakTime < PROACTIVE_INTERVAL_MS) return;
+
+    // Only send context when there's something meaningful to say
+    const dangerAlerts = currentFormState.alerts.filter(c => c.severity === 'danger');
+    const warningAlerts = currentFormState.alerts.filter(c => c.severity === 'warning');
+    const hasFatigueRisk = currentFormState.fatigueData?.predictedInjuryRep !== null;
+
+    // Skip if form is fine — don't spam the agent with "everything is good"
+    if (dangerAlerts.length === 0 && warningAlerts.length === 0 && !hasFatigueRisk) return;
+
     lastProactiveSpeakTime = now;
 
     // Build a concise context string
-    const dangerAlerts = currentFormState.alerts.filter(c => c.severity === 'danger');
-    const warningAlerts = currentFormState.alerts.filter(c => c.severity === 'warning');
-
     let context = `[FORM UPDATE] Exercise: ${currentFormState.exercise} | Rep: ${currentFormState.repCount} | Score: ${currentFormState.formScore}/100`;
 
     if (dangerAlerts.length > 0) {
@@ -397,9 +403,12 @@ function sendContextToAgent() {
         const rc = currentFormState.rootCauses[0];
         context += ` | Root cause: ${rc.rootCause} → ${rc.corrective}`;
     }
-    if (currentFormState.fatigueData?.predictedInjuryRep) {
+    if (hasFatigueRisk) {
         context += ` | Fatigue: injury predicted at rep ${currentFormState.fatigueData.predictedInjuryRep}`;
     }
+
+    // Instruct agent to keep response very short
+    context += ` | IMPORTANT: respond in ONE short sentence only, under 15 words.`;
 
     try {
         conversation.sendMessage({ text: context });

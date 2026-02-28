@@ -226,7 +226,7 @@ function mainLoop(video, canvas) {
         // 7. Kinetic chain analysis (on form issues, throttled)
         if (frameCount % 10 === 0) {
             const chainResults = traceKineticChain(analysis.checks);
-            if (chainResults.length > 0) lastChainResults = chainResults;
+            lastChainResults = chainResults; // Always update — clears when no issues
             updateKineticChain(chainResults);
         }
 
@@ -239,7 +239,7 @@ function mainLoop(video, canvas) {
         // 9. Bilateral asymmetry (throttled to every 15 frames)
         if (frameCount % 15 === 0) {
             const asymmetryResults = detectAsymmetry(landmarks);
-            lastAsymmetryResults = asymmetryResults;
+            lastAsymmetryResults = asymmetryResults; // Always update — reflects current state
             updateAsymmetry(asymmetryResults);
         }
 
