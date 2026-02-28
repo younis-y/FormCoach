@@ -37,6 +37,11 @@ export class RepCounter {
             this.descendThreshold = 40;  // above this = arm is raising
             this.bottomThreshold = 65;   // above this = near top
             this.ascendThreshold = 30;   // below this after top = back to rest
+        } else if (exercise === 'situp') {
+            // Hip angle: ~150° lying flat, ~50-60° at top of sit-up
+            this.descendThreshold = 130;
+            this.bottomThreshold = 80;
+            this.ascendThreshold = 140;
         }
     }
 

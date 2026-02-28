@@ -351,11 +351,118 @@ export function analyseLateralRaise(lm) {
 }
 
 /**
+ * Analyse sit-up form.
+ */
+export function analyseSitup(lm) {
+    const checks = [];
+
+    // Hip angle: shoulder → hip → knee (measures torso-to-thigh angle)
+    const leftHipAngle = calculateAngle(lm[LANDMARKS.LEFT_SHOULDER], lm[LANDMARKS.LEFT_HIP], lm[LANDMARKS.LEFT_KNEE]);
+    const rightHipAngle = calculateAngle(lm[LANDMARKS.RIGHT_SHOULDER], lm[LANDMARKS.RIGHT_HIP], lm[LANDMARKS.RIGHT_KNEE]);
+    const avgHipAngle = (leftHipAngle + rightHipAngle) / 2;
+
+    // Knee angle (should stay bent ~90°)
+    const leftKneeAngle = calculateAngle(lm[LANDMARKS.LEFT_HIP], lm[LANDMARKS.LEFT_KNEE], lm[LANDMARKS.LEFT_ANKLE]);
+    const rightKneeAngle = calculateAngle(lm[LANDMARKS.RIGHT_HIP], lm[LANDMARKS.RIGHT_KNEE], lm[LANDMARKS.RIGHT_ANKLE]);
+    const avgKneeAngle = (leftKneeAngle + rightKneeAngle) / 2;
+
+    // Phase based on hip angle
+    let phase = 'down';
+    if (avgHipAngle < 60) phase = 'top';
+    else if (avgHipAngle < 120) phase = 'rising';
+
+    // ----- CHECK 1: Range of Motion -----
+    if (phase === 'top' || phase === 'rising') {
+        const romGood = avgHipAngle < 70;
+        checks.push({
+            id: 'rom',
+            name: 'Range of Motion',
+            severity: romGood ? 'success' : 'warning',
+            message: romGood
+                ? 'Good curl — full range of motion'
+                : 'Come up higher — engage your core to complete the rep',
+            score: romGood ? 100 : Math.max(30, 100 - (avgHipAngle - 60) * 2),
+            affectedJoints: [LANDMARKS.LEFT_SHOULDER, LANDMARKS.RIGHT_SHOULDER],
+        });
+    }
+
+    // ----- CHECK 2: Neck Position (avoid pulling on neck) -----
+    // If hands are behind head, chin should stay neutral — check ear-to-shoulder distance
+    const leftEarShoulderDist = Math.abs(lm[LANDMARKS.LEFT_EAR].y - lm[LANDMARKS.LEFT_SHOULDER].y);
+    const rightEarShoulderDist = Math.abs(lm[LANDMARKS.RIGHT_EAR].y - lm[LANDMARKS.RIGHT_SHOULDER].y);
+    const avgEarDist = (leftEarShoulderDist + rightEarShoulderDist) / 2;
+
+    if (phase !== 'down' && avgEarDist < 0.04) {
+        checks.push({
+            id: 'neck_strain',
+            name: 'Neck Position',
+            severity: 'danger',
+            message: 'Chin tucked too far — do not pull on your neck',
+            score: 30,
+            affectedJoints: [LANDMARKS.LEFT_EAR, LANDMARKS.RIGHT_EAR],
+        });
+    } else if (phase !== 'down') {
+        checks.push({
+            id: 'neck_strain',
+            name: 'Neck Position',
+            severity: 'success',
+            message: 'Good neck position — neutral spine',
+            score: 100,
+            affectedJoints: [LANDMARKS.LEFT_EAR, LANDMARKS.RIGHT_EAR],
+        });
+    }
+
+    // ----- CHECK 3: Knee Bend (should stay ~80-110°) -----
+    if (avgKneeAngle > 140) {
+        checks.push({
+            id: 'knee_position',
+            name: 'Knee Position',
+            severity: 'warning',
+            message: 'Bend your knees more — feet flat on the floor',
+            score: 50,
+            affectedJoints: [LANDMARKS.LEFT_KNEE, LANDMARKS.RIGHT_KNEE],
+        });
+    }
+
+    // ----- CHECK 4: Bilateral Symmetry -----
+    const hipAngleDiff = Math.abs(leftHipAngle - rightHipAngle);
+    if (phase !== 'down' && hipAngleDiff > 12) {
+        checks.push({
+            id: 'asymmetric',
+            name: 'Torso Symmetry',
+            severity: hipAngleDiff > 20 ? 'danger' : 'warning',
+            message: `Uneven curl — ${hipAngleDiff.toFixed(0)}° difference between sides`,
+            score: Math.max(0, 100 - hipAngleDiff * 3),
+            affectedJoints: [LANDMARKS.LEFT_HIP, LANDMARKS.RIGHT_HIP],
+        });
+    }
+
+    const activeChecks = checks.filter(c => c.score !== undefined);
+    const overallScore = activeChecks.length > 0
+        ? Math.round(activeChecks.reduce((sum, c) => sum + c.score, 0) / activeChecks.length)
+        : 100;
+
+    return {
+        checks,
+        overallScore,
+        phase,
+        jointAngles: {
+            leftHip: leftHipAngle,
+            rightHip: rightHipAngle,
+            leftKnee: leftKneeAngle,
+            rightKnee: rightKneeAngle,
+            hipAngleDiff,
+        },
+    };
+}
+
+/**
  * Route to correct exercise analyser.
  */
 export function analyseForm(exercise, landmarks) {
     if (exercise === 'squat') return analyseSquat(landmarks);
     if (exercise === 'pushup') return analysePushup(landmarks);
     if (exercise === 'lateral_raise') return analyseLateralRaise(landmarks);
+    if (exercise === 'situp') return analyseSitup(landmarks);
     return { checks: [], overallScore: 100, phase: 'standing', jointAngles: {} };
 }

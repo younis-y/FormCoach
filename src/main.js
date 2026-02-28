@@ -216,6 +216,8 @@ function mainLoop(video, canvas) {
             primaryAngle = (analysis.jointAngles.leftKnee + analysis.jointAngles.rightKnee) / 2;
         } else if (selectedExercise === 'lateral_raise') {
             primaryAngle = (analysis.jointAngles.leftShoulder + analysis.jointAngles.rightShoulder) / 2;
+        } else if (selectedExercise === 'situp') {
+            primaryAngle = (analysis.jointAngles.leftHip + analysis.jointAngles.rightHip) / 2;
         } else {
             primaryAngle = (analysis.jointAngles.leftElbow + analysis.jointAngles.rightElbow) / 2;
         }
