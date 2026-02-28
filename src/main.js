@@ -34,6 +34,11 @@ let lastChainResults = [];
 let lastAsymmetryResults = [];
 let frameCount = 0;
 
+// Debounce: track previous dashboard content to avoid fluttering
+let lastAlertHash = '';
+let lastChainHash = '';
+let lastAsymmetryHash = '';
+
 // ── Setup Screen Logic ──
 document.addEventListener('DOMContentLoaded', () => {
     // Exercise buttons
@@ -218,16 +223,24 @@ function mainLoop(video, canvas) {
         // 5. Update overlays
         updateOverlays(repCounter.repCount, analysis.overallScore);
 
-        // 6. Update alerts (throttled to every 5 frames)
-        if (frameCount % 5 === 0) {
-            updateAlerts(analysis.checks);
+        // 6. Update alerts (throttled to every 15 frames + debounced)
+        if (frameCount % 15 === 0) {
+            const alertHash = analysis.checks.map(c => c.id + c.severity).join(',');
+            if (alertHash !== lastAlertHash) {
+                lastAlertHash = alertHash;
+                updateAlerts(analysis.checks);
+            }
         }
 
-        // 7. Kinetic chain analysis (on form issues, throttled)
-        if (frameCount % 10 === 0) {
+        // 7. Kinetic chain analysis (throttled to every 30 frames + debounced)
+        if (frameCount % 30 === 0) {
             const chainResults = traceKineticChain(analysis.checks);
-            lastChainResults = chainResults; // Always update — clears when no issues
-            updateKineticChain(chainResults);
+            const chainHash = chainResults.map(r => r.symptom).join(',');
+            if (chainHash !== lastChainHash) {
+                lastChainHash = chainHash;
+                lastChainResults = chainResults;
+                updateKineticChain(chainResults);
+            }
         }
 
         // 8. Update fatigue chart on rep completion
@@ -236,11 +249,15 @@ function mainLoop(video, canvas) {
             updateFatigueChart(repScores);
         }
 
-        // 9. Bilateral asymmetry (throttled to every 15 frames)
-        if (frameCount % 15 === 0) {
+        // 9. Bilateral asymmetry (throttled to every 30 frames + debounced)
+        if (frameCount % 30 === 0) {
             const asymmetryResults = detectAsymmetry(landmarks);
-            lastAsymmetryResults = asymmetryResults; // Always update — reflects current state
-            updateAsymmetry(asymmetryResults);
+            const asymHash = asymmetryResults.map(a => a.name + Math.round(a.asymmetryPct)).join(',');
+            if (asymHash !== lastAsymmetryHash) {
+                lastAsymmetryHash = asymHash;
+                lastAsymmetryResults = asymmetryResults;
+                updateAsymmetry(asymmetryResults);
+            }
         }
 
         // 10. Voice coaching — generates cues AND pushes context to conversational AI

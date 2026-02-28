@@ -514,9 +514,9 @@ async function legacySpeak(text) {
                     text,
                     model_id: 'eleven_turbo_v2_5',
                     voice_settings: {
-                        stability: 0.6,
-                        similarity_boost: 0.75,
-                        speed: 1.1,
+                        stability: 0.7,
+                        similarity_boost: 0.8,
+                        speed: 0.85,
                     },
                 }),
             }
