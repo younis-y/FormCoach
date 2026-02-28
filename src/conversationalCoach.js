@@ -15,7 +15,7 @@
 import { Conversation } from '@elevenlabs/client';
 
 // ── Configuration ──────────────────────────────────────────────────────
-const DEFAULT_VOICE_ID = 'JBFqnCBsd6RMkjVDRZzb'; // "George" — clear, authoritative
+const DEFAULT_VOICE_ID = 'EXAVITQu4vr4xnSDxMaL'; // "Sarah" — mature, reassuring, confident
 const PROACTIVE_INTERVAL_MS = 15000; // Coach speaks proactively every 15s max
 const CONTEXT_UPDATE_INTERVAL_MS = 8000; // Push form data context every 8s
 
