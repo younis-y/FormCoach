@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FormCoach AI — Your AI Personal Trainer</title>
+  <meta name="description" content="Real-time AI personal trainer using pose estimation, kinetic chain analysis, and voice coaching." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <!-- Landing / Setup Screen -->
+  <div id="setup-screen" class="screen active">
+    <div class="setup-container">
+      <div class="logo-section">
+        <div class="logo-icon">🏋️</div>
+        <h1 class="logo-title">Form<span class="accent">Coach</span> AI</h1>
+        <p class="logo-subtitle">AI-powered kinetic chain analysis & injury prediction</p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">🔗</div>
+          <h3>Kinetic Chain Analysis</h3>
+          <p>Traces root causes of bad form through your biomechanical chain</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📈</div>
+          <h3>Fatigue Prediction</h3>
+          <p>Predicts which rep you'll hit injury risk — before it happens</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">↔️</div>
+          <h3>Bilateral Asymmetry</h3>
+          <p>Detects left-vs-right imbalances that cause chronic injuries</p>
+        </div>
+      </div>
+
+      <div class="exercise-select">
+        <label>Select Exercise</label>
+        <div class="exercise-buttons">
+          <button class="exercise-btn active" data-exercise="squat">
+            <span class="exercise-emoji">🦵</span>
+            Squat
+          </button>
+          <button class="exercise-btn" data-exercise="pushup">
+            <span class="exercise-emoji">💪</span>
+            Push-up
+          </button>
+        </div>
+      </div>
+
+      <button id="start-btn" class="start-button">
+        <span class="btn-icon">📷</span>
+        Start Coaching Session
+      </button>
+      <p class="camera-note">Requires webcam access. Position yourself so your full body is visible.</p>
+    </div>
+  </div>
+
+  <!-- Main Coaching Screen -->
+  <div id="coach-screen" class="screen">
+    <div class="coach-layout">
+      <!-- Video / Canvas Area -->
+      <div class="video-area">
+        <div class="video-container">
+          <video id="webcam" autoplay playsinline muted></video>
+          <canvas id="pose-canvas"></canvas>
+          <!-- Rep counter overlay -->
+          <div id="rep-overlay" class="rep-overlay">
+            <div class="rep-count">0</div>
+            <div class="rep-label">REPS</div>
+          </div>
+          <!-- Form score overlay -->
+          <div id="score-overlay" class="score-overlay">
+            <div class="score-value">--</div>
+            <div class="score-label">FORM</div>
+          </div>
+          <!-- Exercise label -->
+          <div id="exercise-label" class="exercise-label">SQUAT</div>
+          <!-- Voice indicator -->
+          <div id="voice-indicator" class="voice-indicator hidden">
+            <div class="voice-wave"></div>
+            <span>AI Speaking...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dashboard Sidebar -->
+      <div class="dashboard">
+        <div class="dashboard-header">
+          <h2>Form<span class="accent">Coach</span></h2>
+          <button id="stop-btn" class="stop-button">End Session</button>
+        </div>
+
+        <!-- Active Alerts -->
+        <div class="panel" id="alerts-panel">
+          <h3 class="panel-title">
+            <span class="panel-icon">⚠️</span> Live Alerts
+          </h3>
+          <div id="alerts-list" class="alerts-list">
+            <div class="alert-placeholder">Analysing your form...</div>
+          </div>
+        </div>
+
+        <!-- Kinetic Chain Root Cause -->
+        <div class="panel" id="kinetic-panel">
+          <h3 class="panel-title">
+            <span class="panel-icon">🔗</span> Root Cause Analysis
+          </h3>
+          <div id="kinetic-chain" class="kinetic-chain">
+            <div class="chain-placeholder">Perform a rep to see analysis</div>
+          </div>
+        </div>
+
+        <!-- Fatigue Curve -->
+        <div class="panel" id="fatigue-panel">
+          <h3 class="panel-title">
+            <span class="panel-icon">📈</span> Fatigue Curve
+          </h3>
+          <canvas id="fatigue-chart" class="fatigue-chart"></canvas>
+          <div id="fatigue-prediction" class="fatigue-prediction"></div>
+        </div>
+
+        <!-- Bilateral Asymmetry -->
+        <div class="panel" id="asymmetry-panel">
+          <h3 class="panel-title">
+            <span class="panel-icon">↔️</span> Bilateral Asymmetry
+          </h3>
+          <div id="asymmetry-bars" class="asymmetry-bars"></div>
+        </div>
+
+        <!-- Post-Set Summary (hidden until set ends) -->
+        <div class="panel hidden" id="summary-panel">
+          <h3 class="panel-title">
+            <span class="panel-icon">🤖</span> AI Coach Summary
+          </h3>
+          <div id="ai-summary" class="ai-summary"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

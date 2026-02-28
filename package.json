@@ -1,0 +1,14 @@
+{
+  "name": "formcoach",
+  "version": "1.0.0",
+  "description": "AI Personal Trainer — Real-time form analysis with kinetic chain root-cause, fatigue prediction, and bilateral asymmetry detection",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0"
+  }
+}
