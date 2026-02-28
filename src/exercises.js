@@ -1,5 +1,5 @@
 /**
- * FormCoach AI — Exercise Definitions & Biomechanics Rules
+ * TechnIQ AI — Exercise Definitions & Biomechanics Rules
  * Each exercise defines form checks that return alerts with severity.
  */
 

@@ -1,5 +1,5 @@
 /**
- * FormCoach AI — Gemini Integration
+ * TechnIQ AI — Gemini Integration
  * Post-set AI coaching summary using Gemini 2.0 Flash.
  */
 

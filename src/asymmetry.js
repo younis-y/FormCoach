@@ -1,5 +1,5 @@
 /**
- * FormCoach AI — Bilateral Asymmetry Detection
+ * TechnIQ AI — Bilateral Asymmetry Detection
  * Compares left vs right side landmarks to detect muscle imbalances.
  * Core novelty feature #3.
  */

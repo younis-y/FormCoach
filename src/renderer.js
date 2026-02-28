@@ -1,5 +1,5 @@
 /**
- * FormCoach AI — Canvas Renderer
+ * TechnIQ AI — Canvas Renderer
  * Draws skeleton overlay with colour-coded joint risk heatmap.
  */
 

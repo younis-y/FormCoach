@@ -1,6 +1,7 @@
 /**
- * FormCoach AI — Main Application Entry Point
+ * TechnIQ AI — Main Application Entry Point
  * Wires together all modules: pose detection → analysis → rendering → voice.
+ * Now supports ElevenLabs Conversational AI for two-way coaching.
  */
 
 import { initPose, detect } from './pose.js';
@@ -11,7 +12,14 @@ import { predictFatigue } from './fatiguePredictor.js';
 import { detectAsymmetry } from './asymmetry.js';
 import { renderPose } from './renderer.js';
 import { updateAlerts, updateKineticChain, updateFatigueChart, updateAsymmetry, updateOverlays } from './dashboard.js';
-import { initVoice, generateFormCues } from './voice.js';
+import {
+    initConversationalCoach,
+    startCoachingSession,
+    endCoachingSession,
+    generateFormCues,
+    updateFormState,
+    toggleMute,
+} from './conversationalCoach.js';
 import { initGemini, generateCoachingSummary } from './gemini.js';
 
 // ── State ──
@@ -42,6 +50,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Stop button
     document.getElementById('stop-btn').addEventListener('click', endSession);
+
+    // Mute button (if present)
+    const muteBtn = document.getElementById('mute-btn');
+    if (muteBtn) {
+        muteBtn.addEventListener('click', () => toggleMute());
+    }
 });
 
 // ── Session Management ──
@@ -54,16 +68,21 @@ async function startSession() {
         // Init MediaPipe
         await initPose();
 
-        // Init voice (check for API keys in URL params or localStorage)
+        // Init voice coaching (check for API keys in URL params or localStorage)
         const params = new URLSearchParams(window.location.search);
-        const elevenLabsKey = params.get('elevenlabs') || localStorage.getItem('elevenlabs_key') || '';
+        const elevenLabsKey = params.get('elevenlabs') || localStorage.getItem('elevenlabs_key') || 'sk_2fc12142270b61f1bb22bea704eb35c8022e83557944b6ff';
+        const elevenLabsAgentId = params.get('agent') || localStorage.getItem('elevenlabs_agent_id') || 'agent_6401kjje5m02eqbbmsb9vg99d9nn';
         const geminiKey = params.get('gemini') || localStorage.getItem('gemini_key') || '';
 
+        // Initialise conversational coach (replaces legacy initVoice)
         if (elevenLabsKey) {
-            initVoice(elevenLabsKey);
+            initConversationalCoach(elevenLabsKey, elevenLabsAgentId);
             localStorage.setItem('elevenlabs_key', elevenLabsKey);
+            if (elevenLabsAgentId) {
+                localStorage.setItem('elevenlabs_agent_id', elevenLabsAgentId);
+            }
         } else {
-            initVoice(''); // Will use browser TTS fallback
+            initConversationalCoach(''); // Will use browser TTS fallback
         }
 
         if (geminiKey) {
@@ -102,19 +121,25 @@ async function startSession() {
         lastChainResults = [];
         lastAsymmetryResults = [];
 
+        // Start conversational coaching session
+        await startCoachingSession(selectedExercise);
+
         // Start the main loop
         mainLoop(video, canvas);
 
     } catch (error) {
-        console.error('[FormCoach] Init error:', error);
+        console.error('[TechnIQ] Init error:', error);
         startBtn.textContent = 'Error: ' + error.message;
         startBtn.disabled = false;
     }
 }
 
-function endSession() {
+async function endSession() {
     isRunning = false;
     if (animationId) cancelAnimationFrame(animationId);
+
+    // End conversational coaching session
+    await endCoachingSession();
 
     // Stop webcam
     const video = document.getElementById('webcam');
@@ -216,8 +241,20 @@ function mainLoop(video, canvas) {
             updateAsymmetry(asymmetryResults);
         }
 
-        // 10. Voice coaching (on key events)
+        // 10. Voice coaching — generates cues AND pushes context to conversational AI
         const fatigueData = predictFatigue(repCounter.getRepScores());
+
+        // Update the shared form state for the conversational agent
+        updateFormState({
+            exercise: selectedExercise,
+            formScore: analysis.overallScore,
+            repCount: repCounter.repCount,
+            alerts: analysis.checks,
+            rootCauses: lastChainResults,
+            fatigueData,
+            asymmetries: lastAsymmetryResults,
+        });
+
         generateFormCues(analysis.checks, lastChainResults, fatigueData, repData);
     }
 

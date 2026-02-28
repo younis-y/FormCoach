@@ -1,4 +1,4 @@
-# 🏋️ FormCoach AI
+# 🏋️ TechnIQ AI
 
 > Real-time AI personal trainer with kinetic chain analysis, fatigue prediction, and bilateral asymmetry detection.
 

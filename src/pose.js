@@ -1,5 +1,5 @@
 /**
- * FormCoach AI — Pose Detection Module
+ * TechnIQ AI — Pose Detection Module
  * Uses MediaPipe PoseLandmarker (Vision Tasks) for real-time pose estimation.
  * Loaded from CDN — runs entirely client-side via WASM + WebGL.
  */
@@ -33,7 +33,7 @@ export async function initPose() {
         minTrackingConfidence: 0.5,
     });
 
-    console.log('[FormCoach] PoseLandmarker initialized');
+    console.log('[TechnIQ] PoseLandmarker initialized');
     return poseLandmarker;
 }
 

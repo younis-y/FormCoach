@@ -1,5 +1,5 @@
 /**
- * FormCoach AI — Fatigue Predictor
+ * TechnIQ AI — Fatigue Predictor
  * Fits a polynomial to per-rep form scores and predicts
  * the "injury rep" — when form will cross the danger threshold.
  * This is the second core novelty feature.

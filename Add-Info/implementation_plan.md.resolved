@@ -1,0 +1,250 @@
+# FormCoach — Feature Expansion with Lovable + ElevenLabs
+
+Expand the existing FormCoach AI app with 5 new feature areas, leveraging **Lovable** for rapid UI/backend scaffolding and **ElevenLabs Conversational AI** for real-time voice coaching.
+
+## Architecture Overview
+
+```mermaid
+graph LR
+    subgraph Lovable["Lovable (React + Supabase)"]
+        UI[Multi-Page React UI]
+        DB[(Supabase DB)]
+        Auth[Supabase Auth]
+        Edge[Edge Functions]
+    end
+
+    subgraph Existing["Core Engine (keep as-is)"]
+        MP[MediaPipe Pose]
+        BIO[Biomechanics Engine]
+        KC[Kinetic Chain Analysis]
+        FP[Fatigue Predictor]
+        BA[Bilateral Asymmetry]
+    end
+
+    subgraph ElevenLabs["ElevenLabs"]
+        TTS[Text-to-Speech API]
+        CONV[Conversational AI Agent]
+        STT[Scribe STT]
+    end
+
+    UI --> MP
+    MP --> BIO --> KC
+    BIO --> FP
+    BIO --> BA
+    KC --> CONV
+    FP --> CONV
+    CONV --> TTS
+    UI --> Auth
+    UI --> DB
+    Edge --> DB
+```
+
+---
+
+## Platform Strategy
+
+### Lovable — What It Provides
+
+| Capability | How We Use It |
+|---|---|
+| **React + Tailwind code generation** | Build all new pages/screens via natural-language prompts |
+| **Supabase integration** | User accounts, session history, check-in data, rehab plans |
+| **GitHub two-way sync** | Connect to existing `younis-y/FormCoach` repo; all generated code syncs back |
+| **One-click deploy** | Instant preview URLs for testing |
+| **Lovable Cloud secrets** | Store ElevenLabs + Gemini API keys securely |
+
+> [!IMPORTANT]
+> Lovable generates **React + Tailwind** code. The existing vanilla JS engine modules ([exercises.js](file:///Users/yo84/Desktop/Learning/Hackathon-FormCoach/src/exercises.js), [kineticChain.js](file:///Users/yo84/Desktop/Learning/Hackathon-FormCoach/src/kineticChain.js), etc.) will be wrapped as utility imports inside React components — they don't need rewriting.
+
+### ElevenLabs — What It Provides
+
+| Capability | How We Use It |
+|---|---|
+| **Conversational AI Agent** | Replace the existing one-way TTS with a **two-way real-time voice coach** that listens, understands context, and responds |
+| **State-of-the-art turn-taking** | Natural conversation flow — the coach knows when you're mid-rep vs. asking a question |
+| **Integrated RAG** | Feed biomechanical knowledge base into the agent for expert-level answers |
+| **Client Tools (via SDK)** | The voice agent can trigger UI actions (start timer, log check-in, show exercise demo) |
+| **@elevenlabs/client SDK** | Browser-side WebSocket/WebRTC connection for real-time voice |
+| **Multilingual** | 32+ language support out of the box |
+
+---
+
+## Proposed Changes
+
+### Feature 1: Live Coaching + Visual Form Detector + Real-Time Voice Advice
+
+This upgrades the existing one-way voice TTS to a **two-way conversational AI coach** that can see your form data and talk back.
+
+#### What changes
+
+1. **Create an ElevenLabs Conversational AI Agent** (on elevenlabs.io dashboard)
+   - System prompt: expert sports physiotherapist persona
+   - Feed it the kinetic chain rules and biomechanical knowledge as RAG context
+   - Define **client tools** the agent can call:
+     - `getFormScore()` — returns current form score
+     - `getCurrentAlerts()` — returns active form warnings
+     - `getRootCause()` — returns kinetic chain root cause
+     - `getFatigueData()` — returns fatigue curve prediction
+
+2. **Replace [voice.js](file:///Users/yo84/Desktop/Learning/Hackathon-FormCoach/src/voice.js)** with a new `conversationalCoach.js` module
+   - Uses `@elevenlabs/client` SDK to open a WebSocket to the Conversational AI agent
+   - Continuously pushes form analysis data to the agent as context
+   - Agent speaks proactively (form corrections) and responds to user questions
+   - Falls back to existing TTS-only approach if no API key
+
+3. **UI Enhancement** (via Lovable)
+   - Voice interaction indicator (animated waveform when coach is speaking/listening)
+   - "Ask Coach" button to initiate user questions
+   - Microphone permission handling
+
+#### [MODIFY] [voice.js](file:///Users/yo84/Desktop/Learning/Hackathon-FormCoach/src/voice.js)
+Refactor into `conversationalCoach.js` — upgrade from one-way TTS to two-way Conversational AI using `@elevenlabs/client` SDK.
+
+#### [NEW] `src/conversationalCoach.js`
+New module wrapping ElevenLabs Conversational AI SDK with client tools that expose the biomechanics engine state.
+
+---
+
+### Feature 2: Daily 30-Second Check-In
+
+A quick daily voice conversation where the coach asks how you feel and adjusts today's plan.
+
+#### What changes
+
+1. **Supabase table**: `check_ins` — stores daily responses (mood, soreness, energy, sleep)
+2. **New page/screen**: `/check-in` — minimal UI that triggers a 30-second ElevenLabs conversation
+3. **ElevenLabs Agent config**: A separate agent (or mode) focused on check-in questions:
+   - "How are you feeling today?"
+   - "Any soreness from yesterday?"
+   - "Rate your energy 1-10"
+4. **Client tools** the agent calls: `logCheckIn({ mood, soreness, energy })` → writes to Supabase
+5. **Dashboard widget**: Trends over time (mood/soreness chart)
+
+#### [NEW] `src/pages/CheckIn.tsx`
+Full-screen check-in page with voice-first UI and animated avatar.
+
+#### [NEW] `supabase/migrations/create_check_ins.sql`
+`check_ins` table: `id`, `user_id`, `date`, `mood`, `soreness_areas`, `energy_level`, `sleep_quality`, `notes`.
+
+---
+
+### Feature 3: State-of-the-Art Biomechanical Knowledge
+
+Make the coach deeply knowledgeable by feeding it a curated biomechanics knowledge base.
+
+#### What changes
+
+1. **Curate a knowledge base** of biomechanical principles:
+   - Joint mechanics for each exercise (squat, push-up, deadlift, lunge, etc.)
+   - Common movement faults and their root causes
+   - Corrective exercise prescriptions
+   - Mobility assessment protocols
+2. **Upload to ElevenLabs RAG** — the Conversational AI agent can query this knowledge in real-time
+3. **Expand [exercises.js](file:///Users/yo84/Desktop/Learning/Hackathon-FormCoach/src/exercises.js)** with additional exercises and more granular checks
+4. **Knowledge surfacing in UI** — when the coach mentions a concept, show a card with the biomechanical explanation
+
+#### [NEW] `knowledge/biomechanics.md`
+Curated knowledge base document covering joint mechanics, movement faults, correctives.
+
+#### [MODIFY] [exercises.js](file:///Users/yo84/Desktop/Learning/Hackathon-FormCoach/src/exercises.js)
+Add new exercise definitions (deadlift, lunge, overhead press) with form checks.
+
+---
+
+### Feature 4: Rehab Transition Coach / Back-into-Exercise
+
+Guide users returning from injury through progressive exercise programs.
+
+#### What changes
+
+1. **Supabase tables**:
+   - `rehab_profiles` — injury type, recovery stage, limitations
+   - `rehab_programs` — exercise progressions with week-by-week plans
+2. **Onboarding flow** (Lovable page): User describes their injury/surgery through voice or form
+3. **Adaptive coaching**: The ElevenLabs agent checks the user's rehab profile and:
+   - Adjusts form thresholds (e.g., shallower squat depth for knee rehab)
+   - Provides stage-appropriate encouragement
+   - Flags if the user is pushing too hard too soon
+4. **Progress tracking**: Weekly assessments stored in Supabase
+
+#### [NEW] `src/pages/RehabOnboarding.tsx`
+Multi-step onboarding flow for rehab users — voice-enabled.
+
+#### [NEW] `src/components/RehabProgressTracker.tsx`
+Visual progress through rehab phases with milestone markers.
+
+#### [NEW] `supabase/migrations/create_rehab_tables.sql`
+`rehab_profiles` and `rehab_programs` tables.
+
+---
+
+### Feature 5: Movement Snacks / Exercise Reminders
+
+Push notifications and bite-sized exercise prompts throughout the day.
+
+#### What changes
+
+1. **Supabase table**: `movement_snacks` — library of 30-60 second exercises
+2. **Notification system** (Lovable Edge Function + browser Push API):
+   - User sets reminder schedule (e.g., every 2 hours during work)
+   - Edge function triggers push notification
+   - Clicking notification opens a quick movement snack screen
+3. **Movement Snack screen**: Shows exercise with timer, optional voice coaching
+4. **Streak tracking**: Gamification — how many days in a row you've completed your snacks
+
+#### [NEW] `src/pages/MovementSnacks.tsx`
+Browse and perform movement snacks with timer and voice guidance.
+
+#### [NEW] `src/components/StreakTracker.tsx`
+Gamified streak visualization.
+
+#### [NEW] `supabase/migrations/create_snacks_tables.sql`
+`movement_snacks` (library) and `user_snack_log` (completions) tables.
+
+---
+
+## Implementation Strategy
+
+> [!TIP]
+> The recommended workflow is to use **Lovable** for all UI/page generation and **code locally** for the core engine and ElevenLabs integration logic, then sync via GitHub.
+
+### Phase 1 — Foundation (Lovable + Supabase Setup)
+1. Connect the existing GitHub repo to Lovable
+2. Prompt Lovable to scaffold a React + Supabase app structure
+3. Set up Supabase auth and database tables
+4. Wrap existing engine modules as React-compatible utility hooks
+
+### Phase 2 — Core Upgrade (ElevenLabs Conversational AI)
+1. Create the Conversational AI agent on ElevenLabs dashboard
+2. Build `conversationalCoach.js` with `@elevenlabs/client` SDK
+3. Define client tools that expose form analysis state
+4. Integrate into the coaching screen
+
+### Phase 3 — Feature Build-out
+1. Feature 1: Live Coaching (already done in Phase 2)
+2. Feature 2: Daily Check-In page + agent mode
+3. Feature 3: Biomechanics knowledge base → RAG upload
+4. Feature 4: Rehab onboarding + adaptive thresholds
+5. Feature 5: Movement snacks + notifications
+
+### Phase 4 — Polish & Deploy
+1. Design polish via Lovable's visual editor
+2. One-click deploy via Lovable
+3. Test all voice interactions end-to-end
+
+---
+
+## Verification Plan
+
+### Browser Testing
+1. **Live Coaching**: Open the app → Start coaching session → Verify two-way voice works (speak to coach, coach responds with form feedback)
+2. **Check-In**: Navigate to `/check-in` → Complete a 30-second voice check-in → Verify data appears in Supabase
+3. **Knowledge**: Ask the coach a biomechanics question mid-session → Verify it gives a knowledgeable answer
+4. **Rehab**: Complete rehab onboarding → Start coaching → Verify form thresholds are adjusted
+5. **Movement Snacks**: Set a reminder → Receive notification → Complete a snack → Verify streak updates
+
+### Manual Verification (User)
+- Confirm voice quality and natural turn-taking feel
+- Confirm the coach personality/tone matches expectations
+- Verify rehab threshold adjustments feel appropriate for real-world use
+- Test on mobile browser for responsive layout

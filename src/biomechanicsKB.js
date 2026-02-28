@@ -1,0 +1,198 @@
+/**
+ * Biomechanics Knowledge Base — ~20 concepts
+ * Each concept has keywords (for matching agent messages), explanation, root causes, and correctives.
+ */
+
+export const BIOMECHANICS_KB = [
+  {
+    id: 'knee_valgus',
+    title: 'Knee Valgus',
+    keywords: ['knee valgus', 'knees caving', 'knee collapse', 'valgus'],
+    summary: 'Inward collapse of the knee during loaded movements.',
+    explanation: 'Knee valgus occurs when the femur internally rotates and adducts, causing the knee to move medially past the midline of the foot. This places excessive stress on the ACL, MCL, and meniscus.',
+    rootCauses: ['Weak gluteus medius', 'Tight adductors', 'Weak VMO', 'Poor ankle dorsiflexion'],
+    correctives: ['Banded lateral walks', 'Clamshells', 'Single-leg glute bridges', 'Wall sits with ball squeeze'],
+  },
+  {
+    id: 'hip_hinge',
+    title: 'Hip Hinge Pattern',
+    keywords: ['hip hinge', 'hinge pattern', 'hip flexion'],
+    summary: 'Fundamental movement pattern — bending at the hips while maintaining a neutral spine.',
+    explanation: 'The hip hinge loads the posterior chain (glutes, hamstrings, erector spinae) while minimising spinal flexion. Essential for deadlifts, RDLs, and bent-over rows.',
+    rootCauses: ['Poor proprioception', 'Tight hamstrings limiting range', 'Weak glutes'],
+    correctives: ['Wall hip hinge drill', 'Dowel rod hinge (rod touching head, upper back, sacrum)', 'Romanian deadlifts with light load'],
+  },
+  {
+    id: 'scapular_stability',
+    title: 'Scapular Stability',
+    keywords: ['scapular', 'scapula', 'shoulder blade', 'winging'],
+    summary: 'Ability of the shoulder blades to maintain proper position during upper body movements.',
+    explanation: 'The scapula must upwardly rotate, protract, and retract in coordination with the humerus (scapulohumeral rhythm). Instability leads to impingement, rotator cuff strain, and elbow flare.',
+    rootCauses: ['Weak serratus anterior', 'Weak lower trapezius', 'Tight pec minor'],
+    correctives: ['Scapular push-ups', 'Wall slides', 'Prone Y-T-W raises', 'Band pull-aparts'],
+  },
+  {
+    id: 'anterior_pelvic_tilt',
+    title: 'Anterior Pelvic Tilt',
+    keywords: ['anterior pelvic tilt', 'pelvic tilt', 'hip sag', 'lordosis'],
+    summary: 'Forward rotation of the pelvis causing excessive lumbar lordosis.',
+    explanation: 'When hip flexors are tight and glutes/abs are weak, the pelvis tilts forward. This hyperextends the lumbar spine and compromises core stability during squats, presses, and push-ups.',
+    rootCauses: ['Tight hip flexors (psoas, rectus femoris)', 'Weak glutes', 'Weak deep core (transverse abdominis)'],
+    correctives: ['Half-kneeling hip flexor stretch', 'Dead bugs', 'Glute bridges', 'Posterior pelvic tilt drills'],
+  },
+  {
+    id: 'thoracic_mobility',
+    title: 'Thoracic Spine Mobility',
+    keywords: ['thoracic', 't-spine', 'upper back', 'thoracic extension'],
+    summary: 'Range of motion in the mid-back region (T1-T12).',
+    explanation: 'Limited thoracic extension forces compensatory movement at the lumbar spine and shoulders. Crucial for overhead pressing, front squats, and maintaining upright posture.',
+    rootCauses: ['Sedentary posture', 'Weak thoracic extensors', 'Tight anterior chain'],
+    correctives: ['Thoracic foam rolling', 'Cat-cow stretches', 'Open book rotations', 'Bench thoracic extensions'],
+  },
+  {
+    id: 'ankle_dorsiflexion',
+    title: 'Ankle Dorsiflexion',
+    keywords: ['ankle', 'dorsiflexion', 'ankle mobility', 'calf tightness'],
+    summary: 'Ability to bend the ankle so the shin moves toward the toes.',
+    explanation: 'Limited dorsiflexion (< 35°) forces the knees to stay back and the torso to compensate by leaning forward. Critical for squat depth and proper lunge mechanics.',
+    rootCauses: ['Tight gastrocnemius/soleus', 'Joint capsule restriction', 'Previous ankle injuries'],
+    correctives: ['Wall ankle stretches', 'Banded ankle mobilisation', 'Heel-elevated squats as interim fix', 'Calf foam rolling'],
+  },
+  {
+    id: 'core_bracing',
+    title: 'Core Bracing (Intra-Abdominal Pressure)',
+    keywords: ['core bracing', 'brace', 'valsalva', 'intra-abdominal', 'core stability'],
+    summary: '360-degree contraction of the trunk muscles to stabilise the spine.',
+    explanation: 'Proper bracing creates a "cylinder" of intra-abdominal pressure supporting the spine. Involves diaphragm, transverse abdominis, obliques, pelvic floor, and multifidus working in concert.',
+    rootCauses: ['Never trained to brace', 'Weak transverse abdominis', 'Shallow breathing patterns'],
+    correctives: ['Breathing drills: inhale into belly, brace like someone will punch you', 'Dead bugs with exhalation', 'Pallof presses'],
+  },
+  {
+    id: 'posterior_chain',
+    title: 'Posterior Chain',
+    keywords: ['posterior chain', 'glutes', 'hamstrings', 'erector'],
+    summary: 'The muscles along the back of the body — glutes, hamstrings, erector spinae.',
+    explanation: 'The posterior chain is the primary force producer in deadlifts, squats, and sprints. Weakness here causes compensatory patterns: forward lean, back rounding, and knee dominance.',
+    rootCauses: ['Sedentary lifestyle (gluteal amnesia)', 'Quad-dominant movement patterns', 'Insufficient hip extension training'],
+    correctives: ['Hip thrusts', 'Romanian deadlifts', 'Glute bridges', 'Good mornings', 'Nordic hamstring curls'],
+  },
+  {
+    id: 'motor_control',
+    title: 'Motor Control & Movement Quality',
+    keywords: ['motor control', 'movement quality', 'coordination', 'movement pattern'],
+    summary: 'The ability to coordinate muscles in correct sequence and timing.',
+    explanation: 'Good motor control means the right muscles fire in the right order. Poor control causes "energy leaks" and compensations even when muscles are strong enough.',
+    rootCauses: ['Insufficient practice volume', 'Training too heavy too soon', 'Not enough slow, controlled reps'],
+    correctives: ['Tempo training (3-1-3 cadence)', 'Pause reps at bottom position', 'Lighter weight with perfect form'],
+  },
+  {
+    id: 'bilateral_asymmetry',
+    title: 'Bilateral Asymmetry',
+    keywords: ['asymmetry', 'bilateral', 'imbalance', 'left vs right', 'unilateral'],
+    summary: 'Strength or mobility difference between left and right sides.',
+    explanation: 'Some asymmetry is natural (dominant side), but >10% imbalance increases injury risk. The weaker side compensates, creating abnormal loading patterns.',
+    rootCauses: ['Hand/foot dominance', 'Previous unilateral injury', 'Sport-specific patterns (e.g., tennis)'],
+    correctives: ['Start sets with weak side', 'Unilateral exercises (single-leg, single-arm)', 'Match volume: weak side dictates reps'],
+  },
+  {
+    id: 'form_degradation',
+    title: 'Form Degradation & Fatigue',
+    keywords: ['fatigue', 'form degradation', 'fatigue curve', 'declining form'],
+    summary: 'Progressive deterioration of movement quality as muscles tire.',
+    explanation: 'As local muscular endurance depletes, stabilisers fail first, then prime movers compensate. This creates the classic fatigue pattern: form score drops linearly then accelerates.',
+    rootCauses: ['Insufficient muscular endurance', 'Training too close to failure', 'Poor conditioning'],
+    correctives: ['Stop 2-3 reps before failure (RIR 2-3)', 'Build endurance with higher rep ranges', 'Rest longer between sets'],
+  },
+  {
+    id: 'squat_depth',
+    title: 'Squat Depth & ROM',
+    keywords: ['squat depth', 'depth', 'range of motion', 'parallel', 'ass to grass'],
+    summary: 'How deep you descend in a squat — hip crease below knee = full depth.',
+    explanation: 'Deeper squats recruit more muscle (particularly glutes and adductors) but require adequate mobility. Partial squats are not inherently bad — they serve different training purposes.',
+    rootCauses: ['Limited ankle dorsiflexion', 'Tight hip flexors', 'Fear of depth', 'Structural limitations'],
+    correctives: ['Box squats to target depth', 'Goblet squats (counterbalance allows deeper descent)', 'Progressive depth increases'],
+  },
+  {
+    id: 'elbow_position',
+    title: 'Elbow Position in Pressing',
+    keywords: ['elbow flare', 'elbow position', 'elbow tuck', 'pressing mechanics'],
+    summary: 'The angle between the upper arm and torso during pressing movements.',
+    explanation: '45° elbow tuck is generally optimal for push-ups and bench press. Flaring to 90° increases shoulder impingement risk; excessive tuck reduces chest activation.',
+    rootCauses: ['Weak serratus anterior', 'Tight pec minor', 'Habit from incorrect coaching'],
+    correctives: ['Cue: "bend the bar" or "screw your hands into the floor"', 'Scapular push-ups', 'Light weight with conscious elbow tracking'],
+  },
+  {
+    id: 'neutral_spine',
+    title: 'Neutral Spine',
+    keywords: ['neutral spine', 'spine position', 'back position', 'spinal alignment'],
+    summary: 'Maintaining the natural S-curve of the spine under load.',
+    explanation: 'A neutral spine distributes compressive forces evenly across vertebral discs. Flexion (rounding) or extension (arching) under load concentrates stress on specific segments.',
+    rootCauses: ['Weak core', 'Poor body awareness', 'Mobility limitations'],
+    correctives: ['Dowel rod drill (maintain 3 contact points)', 'Cat-cow to find neutral', 'Bracing drills'],
+  },
+  {
+    id: 'progressive_overload',
+    title: 'Progressive Overload',
+    keywords: ['progressive overload', 'overload', 'progression', 'adding weight'],
+    summary: 'Gradually increasing training stimulus to drive adaptation.',
+    explanation: 'Overload can be achieved through more weight, reps, sets, range of motion, or tempo. Key principle: form quality must be maintained as load increases.',
+    rootCauses: ['Jumping weight too fast', 'Ego lifting', 'Insufficient deload periods'],
+    correctives: ['Micro-load (1-2.5 kg increments)', 'Add reps before adding weight', 'Deload week every 4-6 weeks'],
+  },
+  {
+    id: 'breathing',
+    title: 'Breathing Mechanics',
+    keywords: ['breathing', 'breath', 'exhale', 'inhale', 'valsalva'],
+    summary: 'Coordinating breath with movement phases for stability and performance.',
+    explanation: 'Inhale during eccentric (lowering), brace, then exhale during concentric (lifting). The Valsalva maneuver (holding breath against closed glottis) maximises intra-abdominal pressure for heavy lifts.',
+    rootCauses: ['Never taught proper breathing', 'Holding breath too long', 'Shallow chest breathing'],
+    correctives: ['Practice: inhale at top, descend, drive up while exhaling through pursed lips', 'Crocodile breathing drill (prone belly breathing)'],
+  },
+  {
+    id: 'warmup',
+    title: 'Warm-Up & Activation',
+    keywords: ['warm up', 'warmup', 'activation', 'prep'],
+    summary: 'Preparing tissues and neural pathways before training.',
+    explanation: 'An effective warm-up raises tissue temperature, activates underactive muscles, and rehearses movement patterns. Should include: general movement, targeted activation, movement-specific prep.',
+    rootCauses: ['Skipping warm-up', 'Only doing cardio (no activation)', 'Generic stretching without specificity'],
+    correctives: ['5 min light cardio → banded activation (glute, rotator cuff) → empty bar/bodyweight rehearsal'],
+  },
+  {
+    id: 'eccentric_control',
+    title: 'Eccentric Control',
+    keywords: ['eccentric', 'lowering', 'negative', 'control'],
+    summary: 'Controlling the lowering phase of a movement.',
+    explanation: 'The eccentric phase is where muscle damage (and therefore growth stimulus) primarily occurs. Dropping quickly wastes this opportunity and increases injury risk from sudden loading.',
+    rootCauses: ['Ego lifting (weight too heavy to control)', 'Rushing reps', 'Insufficient muscle endurance'],
+    correctives: ['3-second eccentric tempo', 'Pause at bottom', 'Reduce weight 10-20% and focus on control'],
+  },
+  {
+    id: 'grip',
+    title: 'Grip Strength & Position',
+    keywords: ['grip', 'grip strength', 'hand position', 'wrist'],
+    summary: 'How you hold the bar and the strength of your grip.',
+    explanation: 'Grip is often the weakest link in deadlifts and pulls. Wrist position affects force transfer — a neutral wrist transmits force efficiently, while a bent wrist leaks energy.',
+    rootCauses: ['Weak forearm flexors', 'Using straps too early', 'Incorrect grip width'],
+    correctives: ['Farmer carries', 'Dead hangs', 'Wrist curls', 'Chalk before straps'],
+  },
+  {
+    id: 'mind_muscle',
+    title: 'Mind-Muscle Connection',
+    keywords: ['mind muscle', 'activation', 'feel the muscle', 'connection'],
+    summary: 'Consciously focusing on the target muscle during a movement.',
+    explanation: 'Research shows that internal focus of attention increases EMG activation of the target muscle by up to 20%. Most beneficial for hypertrophy-focused training.',
+    rootCauses: ['Training too heavy (can\'t feel anything)', 'Rushing through reps', 'Poor muscle awareness'],
+    correctives: ['Lighter weight with focus on squeeze', 'Isometric holds at peak contraction', 'Touch the target muscle during the set'],
+  },
+];
+
+export function findConcept(text) {
+  const lower = text.toLowerCase();
+  return BIOMECHANICS_KB.filter(concept =>
+    concept.keywords.some(kw => lower.includes(kw))
+  );
+}
+
+export function getConceptById(id) {
+  return BIOMECHANICS_KB.find(c => c.id === id) || null;
+}

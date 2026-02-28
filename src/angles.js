@@ -1,5 +1,5 @@
 /**
- * FormCoach AI — Joint Angle Calculations
+ * TechnIQ AI — Joint Angle Calculations
  * All angle math uses atan2 for robustness.
  */
 

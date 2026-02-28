@@ -1,5 +1,5 @@
 /**
- * FormCoach AI — Rep Counter & Per-Rep Form Scoring
+ * TechnIQ AI — Rep Counter & Per-Rep Form Scoring
  * State machine for detecting repetitions + storing per-rep data for fatigue analysis.
  */
 

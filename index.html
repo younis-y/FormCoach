@@ -1,22 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>FormCoach AI — Your AI Personal Trainer</title>
-  <meta name="description" content="Real-time AI personal trainer using pose estimation, kinetic chain analysis, and voice coaching." />
+  <title>TechnIQ AI — Your AI Personal Trainer</title>
+  <meta name="description"
+    content="Real-time AI personal trainer using pose estimation, kinetic chain analysis, and voice coaching." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="/style.css" />
 </head>
+
 <body>
   <!-- Landing / Setup Screen -->
   <div id="setup-screen" class="screen active">
     <div class="setup-container">
       <div class="logo-section">
         <div class="logo-icon">🏋️</div>
-        <h1 class="logo-title">Form<span class="accent">Coach</span> AI</h1>
+        <h1 class="logo-title">Techn<span class="accent">IQ</span> AI</h1>
         <p class="logo-subtitle">AI-powered kinetic chain analysis & injury prediction</p>
       </div>
 
@@ -35,6 +39,11 @@
           <div class="feature-icon">↔️</div>
           <h3>Bilateral Asymmetry</h3>
           <p>Detects left-vs-right imbalances that cause chronic injuries</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎙️</div>
+          <h3>Conversational AI Coach</h3>
+          <p>Two-way voice coaching — ask questions and get real-time answers mid-set</p>
         </div>
       </div>
 
@@ -56,7 +65,9 @@
         <span class="btn-icon">📷</span>
         Start Coaching Session
       </button>
-      <p class="camera-note">Requires webcam access. Position yourself so your full body is visible.</p>
+      <p class="camera-note">Requires webcam + microphone access. Position yourself so your full body is visible.</p>
+      <p class="camera-note" style="font-size: 0.7rem; opacity: 0.5; margin-top: 0.5rem;">Pass API keys via URL:
+        <code>?elevenlabs=KEY&agent=AGENT_ID&gemini=KEY</code></p>
     </div>
   </div>
 
@@ -83,16 +94,21 @@
           <!-- Voice indicator -->
           <div id="voice-indicator" class="voice-indicator hidden">
             <div class="voice-wave"></div>
-            <span>AI Speaking...</span>
+            <span>AI Coach Active</span>
           </div>
+          <!-- Coach status -->
+          <div id="coach-status" class="coach-status">⚫ Initialising...</div>
         </div>
       </div>
 
       <!-- Dashboard Sidebar -->
       <div class="dashboard">
         <div class="dashboard-header">
-          <h2>Form<span class="accent">Coach</span></h2>
-          <button id="stop-btn" class="stop-button">End Session</button>
+          <h2>Techn<span class="accent">IQ</span></h2>
+          <div class="dashboard-controls">
+            <button id="mute-btn" class="mute-button" title="Mute/unmute microphone">🎤 Mute</button>
+            <button id="stop-btn" class="stop-button">End Session</button>
+          </div>
         </div>
 
         <!-- Active Alerts -->
@@ -145,4 +161,5 @@
 
   <script type="module" src="/src/main.js"></script>
 </body>
+
 </html>

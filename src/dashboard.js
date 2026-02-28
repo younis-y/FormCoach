@@ -1,5 +1,5 @@
 /**
- * FormCoach AI — Dashboard UI Updates
+ * TechnIQ AI — Dashboard UI Updates
  * Updates the sidebar panels: alerts, kinetic chain, fatigue chart, asymmetry.
  */
 

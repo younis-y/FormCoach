@@ -1,5 +1,5 @@
 /**
- * FormCoach AI — ElevenLabs Voice Coaching
+ * TechnIQ AI — ElevenLabs Voice Coaching
  * Throttled voice queue with priority system.
  * Uses the ElevenLabs TTS API for natural-sounding coaching.
  */
@@ -17,7 +17,7 @@ let voiceQueue = [];
  */
 export function initVoice(key) {
     apiKey = key;
-    console.log('[FormCoach] Voice coaching initialised');
+    console.log('[TechnIQ] Voice coaching initialised');
 }
 
 /**

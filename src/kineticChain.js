@@ -1,5 +1,5 @@
 /**
- * FormCoach AI — Kinetic Chain Root-Cause Analysis
+ * TechnIQ AI — Kinetic Chain Root-Cause Analysis
  * Maps symptoms (form faults) → upstream biomechanical causes → corrective exercises.
  * This is the core novelty feature.
  */
