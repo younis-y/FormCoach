@@ -236,10 +236,126 @@ export function analysePushup(lm) {
 }
 
 /**
+ * Analyse lateral raise form.
+ */
+export function analyseLateralRaise(lm) {
+    const checks = [];
+
+    // Shoulder abduction angle: hip → shoulder → wrist
+    const leftShoulderAngle = calculateAngle(lm[LANDMARKS.LEFT_HIP], lm[LANDMARKS.LEFT_SHOULDER], lm[LANDMARKS.LEFT_WRIST]);
+    const rightShoulderAngle = calculateAngle(lm[LANDMARKS.RIGHT_HIP], lm[LANDMARKS.RIGHT_SHOULDER], lm[LANDMARKS.RIGHT_WRIST]);
+    const avgShoulderAngle = (leftShoulderAngle + rightShoulderAngle) / 2;
+
+    // Elbow angle (should stay mostly straight, ~160-180°)
+    const leftElbowAngle = calculateAngle(lm[LANDMARKS.LEFT_SHOULDER], lm[LANDMARKS.LEFT_ELBOW], lm[LANDMARKS.LEFT_WRIST]);
+    const rightElbowAngle = calculateAngle(lm[LANDMARKS.RIGHT_SHOULDER], lm[LANDMARKS.RIGHT_ELBOW], lm[LANDMARKS.RIGHT_WRIST]);
+    const avgElbowAngle = (leftElbowAngle + rightElbowAngle) / 2;
+
+    // Phase detection based on shoulder abduction
+    let phase = 'down';
+    if (avgShoulderAngle > 70) phase = 'top';
+    else if (avgShoulderAngle > 35) phase = 'raising';
+
+    // ----- CHECK 1: Arm Height (should reach ~80-90° at top) -----
+    if (phase === 'top') {
+        const heightGood = avgShoulderAngle >= 75 && avgShoulderAngle <= 100;
+        const tooHigh = avgShoulderAngle > 100;
+        checks.push({
+            id: 'arm_height',
+            name: 'Arm Height',
+            severity: heightGood ? 'success' : tooHigh ? 'warning' : 'warning',
+            message: heightGood
+                ? 'Good height — arms at shoulder level'
+                : tooHigh
+                    ? 'Arms too high — stop at shoulder level to protect rotator cuff'
+                    : 'Raise arms higher — aim for shoulder level',
+            score: heightGood ? 100 : tooHigh ? 60 : Math.max(0, avgShoulderAngle * 1.2),
+            affectedJoints: [LANDMARKS.LEFT_SHOULDER, LANDMARKS.RIGHT_SHOULDER],
+        });
+    }
+
+    // ----- CHECK 2: Elbow Bend (should be slight ~15-30°, not fully bent) -----
+    if (phase !== 'down') {
+        const elbowOk = avgElbowAngle > 145;
+        const tooMuchBend = avgElbowAngle < 120;
+        checks.push({
+            id: 'elbow_bend',
+            name: 'Elbow Position',
+            severity: tooMuchBend ? 'danger' : !elbowOk ? 'warning' : 'success',
+            message: tooMuchBend
+                ? 'Elbows too bent — this turns it into an upright row'
+                : !elbowOk
+                    ? 'Keep a slight bend in elbows — do not flex too much'
+                    : 'Good elbow position — slight bend maintained',
+            score: tooMuchBend ? 40 : !elbowOk ? 70 : 100,
+            affectedJoints: [LANDMARKS.LEFT_ELBOW, LANDMARKS.RIGHT_ELBOW],
+        });
+    }
+
+    // ----- CHECK 3: Bilateral Symmetry -----
+    const armAngleDiff = Math.abs(leftShoulderAngle - rightShoulderAngle);
+    if (phase !== 'down' && armAngleDiff > 12) {
+        checks.push({
+            id: 'asymmetric',
+            name: 'Arm Symmetry',
+            severity: armAngleDiff > 20 ? 'danger' : 'warning',
+            message: `Arms uneven — ${armAngleDiff.toFixed(0)}° difference between sides`,
+            score: Math.max(0, 100 - armAngleDiff * 3),
+            affectedJoints: [LANDMARKS.LEFT_WRIST, LANDMARKS.RIGHT_WRIST],
+        });
+    }
+
+    // ----- CHECK 4: Shoulder Shrug (traps compensation) -----
+    // If shoulders rise toward ears, y-distance from ear to shoulder shrinks
+    const leftEarShoulderDist = Math.abs(lm[LANDMARKS.LEFT_EAR].y - lm[LANDMARKS.LEFT_SHOULDER].y);
+    const rightEarShoulderDist = Math.abs(lm[LANDMARKS.RIGHT_EAR].y - lm[LANDMARKS.RIGHT_SHOULDER].y);
+    const avgEarShoulderDist = (leftEarShoulderDist + rightEarShoulderDist) / 2;
+
+    if (phase !== 'down' && avgEarShoulderDist < 0.06) {
+        checks.push({
+            id: 'shoulder_shrug',
+            name: 'Shoulder Shrug',
+            severity: 'danger',
+            message: 'Shrugging shoulders — lower your traps, lead with elbows',
+            score: 30,
+            affectedJoints: [LANDMARKS.LEFT_SHOULDER, LANDMARKS.RIGHT_SHOULDER],
+        });
+    } else if (phase !== 'down') {
+        checks.push({
+            id: 'shoulder_shrug',
+            name: 'Shoulder Position',
+            severity: 'success',
+            message: 'Shoulders depressed — good isolation of lateral delts',
+            score: 100,
+            affectedJoints: [LANDMARKS.LEFT_SHOULDER, LANDMARKS.RIGHT_SHOULDER],
+        });
+    }
+
+    const activeChecks = checks.filter(c => c.score !== undefined);
+    const overallScore = activeChecks.length > 0
+        ? Math.round(activeChecks.reduce((sum, c) => sum + c.score, 0) / activeChecks.length)
+        : 100;
+
+    return {
+        checks,
+        overallScore,
+        phase,
+        jointAngles: {
+            leftShoulder: leftShoulderAngle,
+            rightShoulder: rightShoulderAngle,
+            leftElbow: leftElbowAngle,
+            rightElbow: rightElbowAngle,
+            armAngleDiff,
+        },
+    };
+}
+
+/**
  * Route to correct exercise analyser.
  */
 export function analyseForm(exercise, landmarks) {
     if (exercise === 'squat') return analyseSquat(landmarks);
     if (exercise === 'pushup') return analysePushup(landmarks);
+    if (exercise === 'lateral_raise') return analyseLateralRaise(landmarks);
     return { checks: [], overallScore: 100, phase: 'standing', jointAngles: {} };
 }

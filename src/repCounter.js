@@ -31,6 +31,12 @@ export class RepCounter {
             this.descendThreshold = 140;
             this.bottomThreshold = 105;
             this.ascendThreshold = 150;
+        } else if (exercise === 'lateral_raise') {
+            // Shoulder abduction: ~20° at rest, ~80-90° at top
+            // "Descend" = raising up (angle increases), "bottom" = top of move
+            this.descendThreshold = 40;  // above this = arm is raising
+            this.bottomThreshold = 65;   // above this = near top
+            this.ascendThreshold = 30;   // below this after top = back to rest
         }
     }
 
